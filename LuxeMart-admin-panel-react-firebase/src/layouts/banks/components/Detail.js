@@ -116,7 +116,7 @@ function Detail() {
   }, [bankCardFile])
 
   React.useEffect(() => {
-    const fetchDataById = onSnapshot(doc(db, "banks", id),
+    const fetchDataById = onSnapshot(doc(db, "discountproducts", id),
       (doc) => (setData(doc.data())),
       (error) => {
         console.log("error == ", error.code)
@@ -130,7 +130,7 @@ function Detail() {
   const fetchSpecificBankAndDiscountCard = async (id) => {
     // get data from database
     try {
-      const bankName = doc(db, "banks", id)
+      const bankName = doc(db, "discountproducts", id)
       const getSpecificBankName = await getDoc(bankName);
       if (getSpecificBankName.exists()) {
         setSelectedBankName(getSpecificBankName.data())
@@ -163,7 +163,7 @@ function Detail() {
     try {
       setLoading(true)
       if (id) {
-        const docRef = doc(db, "banks", id)
+        const docRef = doc(db, "discountproducts", id)
         await setDoc(docRef, updateData, { merge: true })
       }
       if (discountsId) {
@@ -213,7 +213,7 @@ function Detail() {
         open={bankCardModal}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={bankCardModalClose}>
-          <Typography variant="h3" color="secondary.main" sx={{ pt: 1, textAlign: "center" }}>Add Bank Card</Typography>
+          <Typography variant="h3" color="secondary.main" sx={{ pt: 1, textAlign: "center" }}>Add Product Card</Typography>
         </BootstrapDialogTitle>
         <DialogContent dividers>
           <Box
@@ -340,7 +340,7 @@ function Detail() {
                 <Card>
                   <MDBox pt={3} px={2}>
                     <MDTypography variant="h6" fontWeight="medium" sx={{ textAlign: 'center' }}>
-                      Bank Detail
+                      Product Detail
                     </MDTypography>
                   </MDBox>
                   <MDBox pt={1} pb={2} px={2}>
@@ -376,14 +376,14 @@ function Detail() {
                   >
                     <MDBox pt={2} pb={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
                       <MDTypography variant="h6" fontWeight="medium" color="white">
-                        Bank Cards
+                        Product Cards
                       </MDTypography>
                       <MDButton variant="gradient" color="light"
                         onClick={() => {
                           bankCardModalOpen()
                         }}>
                         <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                        &nbsp;ADD BANK CARD
+                        &nbsp;ADD Product CARD
                       </MDButton>
                     </MDBox>
                   </MDBox>

@@ -96,7 +96,7 @@ function App() {
           {role && <Sidenav
             color={sidenavColor}
             brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-            brandName={role === "admin" ? "Admin Panel" : role === "brand" ? "Brand Panel" : role === "bank" ? "Bank Panel" : ''}
+            brandName={role === "admin" ? "LuxeMart Admin Panel" : role === "brand" ? "LuxeMart Brand Panel" : role === "bank" ? "LuxeMart Product Panel" : ''}
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}

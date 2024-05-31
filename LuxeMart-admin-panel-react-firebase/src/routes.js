@@ -59,10 +59,10 @@ const routes = [
   {
     routeRole: "admin",
     type: "collapse",
-    name: "Brands",
-    key: "admin/brands",
+    name: "Products",
+    key: "admin/products",
     icon: <StoreIcon />,
-    route: "/admin/brands",
+    route: "/admin/products",
     component: <AdminAuthRoutes><Brands /></AdminAuthRoutes>,
   },
   {
@@ -78,9 +78,9 @@ const routes = [
     routeRole: "admin",
     type: "collapse",
     name: "Discount Products",
-    key: "admin/banks",
+    key: "admin/discountproducts",
     icon: <Icon>discounts</Icon>,
-    route: "/admin/banks",
+    route: "/admin/discountproducts",
     component: <AdminAuthRoutes><Banks /></AdminAuthRoutes>,
   },
   {
@@ -140,18 +140,18 @@ const routes = [
     routeRole: "brand",
     type: "collapse",
     name: "Add Sale",
-    key: "brand/addSale",
+    key: "products/addSale",
     icon: <InventoryIcon />,
-    route: "/brand/addSale",
+    route: "/products/addSale",
     component: <BrandAuthRoutes><AddSale /></BrandAuthRoutes>,
   },
   {
     routeRole: "brand",
     type: "collapse",
     name: `Send Notifications`,
-    key: "brand/sendNotifications",
+    key: "products/sendNotifications",
     icon: <NotificationAddIcon />,
-    route: "/brand/sendNotifications",
+    route: "/products/sendNotifications",
     component: <BrandAuthRoutes><SendNotifications /></BrandAuthRoutes>,
   },
   {
@@ -187,13 +187,13 @@ const authRoutes = [
   {
     routeRole: "admin",
     type: "authRoutes",
-    route: "/admin/brands/detail/:id",
+    route: "/admin/products/detail/:id",
     component: <AdminAuthRoutes><BrandsDetail /></AdminAuthRoutes>,
   },
   {
     routeRole: "admin",
     type: "authRoutes",
-    route: "/admin/banks/detail/:id",
+    route: "/admin/discountproducts/detail/:id",
     component: <AdminAuthRoutes><BanksDetail /></AdminAuthRoutes>,
   },
   {
@@ -217,13 +217,13 @@ const authRoutes = [
   {
     routeRole: "brand",
     type: "authRoutes",
-    route: `/brand/addSale/detail/:id`,
+    route: `/products/addSale/detail/:id`,
     component: <BrandAuthRoutes><SalesDetail /></BrandAuthRoutes>,
   },
   {
     routeRole: "bank",
     type: "authRoutes",
-    route: "/bank/discounts/detail/:id",
+    route: "/products/discounts/detail/:id",
     component: <BankAuthRoutes><DiscountsDetail /></BankAuthRoutes>,
   },
 ]

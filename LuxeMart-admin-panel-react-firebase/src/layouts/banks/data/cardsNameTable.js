@@ -108,7 +108,7 @@ function Data(dataId) {
   }, [bankCardFile])
 
   React.useEffect(() => {
-    const fetchData = onSnapshot(doc(db, "banks", dataId),
+    const fetchData = onSnapshot(doc(db, "discountproducts", dataId),
       (doc) => {
         setData(doc.data().cards)
         setSelectedBankName(doc.data())
@@ -152,11 +152,11 @@ function Data(dataId) {
     try {
       setLoading(true)
       if (dataId) {
-        const delDocRef = doc(db, "banks", dataId)
+        const delDocRef = doc(db, "discountproducts", dataId)
         await setDoc(delDocRef, deleteData, { merge: true })
       }
       if (dataId) {
-        const updDocRef = doc(db, "banks", dataId)
+        const updDocRef = doc(db, "discountproducts", dataId)
         await setDoc(updDocRef, updateData, { merge: true })
       }
       if (discountsId) {
@@ -190,7 +190,7 @@ function Data(dataId) {
     }
     try {
       if (dataId) {
-        const docRef = doc(db, "banks", dataId)
+        const docRef = doc(db, "discountproducts", dataId)
         await setDoc(docRef, deleteData, { merge: true })
       }
       if (discountsId) {
@@ -344,7 +344,7 @@ function Data(dataId) {
                 autoComplete="off"
               >
                 <TextField
-                  label="Bank"
+                  label="Product"
                   InputProps={{
                     readOnly: true,
                   }}

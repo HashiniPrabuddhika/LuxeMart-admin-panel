@@ -73,7 +73,7 @@ const style = {
   boxShadow: 24,
 };
 
-function Bill({ name, contactNo, address, image, noGutter, dataId }) {
+function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [deleteAlert, setDeleteAlert] = React.useState(false);
@@ -93,7 +93,7 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
   React.useEffect(() => {
     const uploadBankFile = () => {
       const name = bankFile.name
-      const storageRef = ref(storage, `banks/${name}`);
+      const storageRef = ref(storage, `discountproducts/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, bankFile);
       uploadTask.on('state_changed',
         (snapshot) => {
@@ -121,7 +121,7 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
   const fetchDataById = async (dataId) => {
     // get data from firestore
     try {
-      const getBrands = await getDoc(doc(db, "banks", dataId));
+      const getBrands = await getDoc(doc(db, "discountproducts", dataId));
       if (getBrands.exists()) {
         setDbBanksData(getBrands.data())
       } else {
@@ -145,14 +145,14 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
     // delete data from firestore
     try {
       if (dataId) {
-        const reference = doc(db, 'banks', dataId)
+        const reference = doc(db, 'discountproducts', dataId)
         await deleteDoc(reference)
       }
       if (discountsId) {
         const reference = doc(db, 'discounts', discountsId)
         await deleteDoc(reference)
       }
-      navigate("/admin/banks")
+      navigate("/admin/discountproducts")
     } catch (error) {
       console.log('error == ', error)
     }
@@ -166,13 +166,14 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
     const updateData = {
       name: dbBanksData.nametoLowerCase().replace(/\s+/g, '').trim(),
       contactNo: dbBanksData.contactNo,
+      category: dbBanksData.category,
       address: dbBanksData.address,
       image: dbBanksData.image
     }
     try {
       setLoading(true)
       if (dataId) {
-        const banksDocRef = doc(db, "banks", dataId)
+        const banksDocRef = doc(db, "discountproducts", dataId)
         await setDoc(banksDocRef, updateData, { merge: true })
       }
       if (discountsId) {
@@ -256,7 +257,7 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
             autoComplete="off"
           >
             <TextField
-              label="Bank Name"
+              label="Product Name"
               type="text"
               color="secondary"
               required
@@ -266,8 +267,9 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
                 name: e.target.value
               })}
             />
+            
             <TextField
-              label="Contact Number"
+              label="Current Price"
               type="number"
               color="secondary"
               required
@@ -290,7 +292,7 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
             />
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth>
-                <InputLabel htmlFor="outlined-adornment-amount">Bank Image</InputLabel>
+                <InputLabel htmlFor="outlined-adornment-amount">Product Image</InputLabel>
                 <OutlinedInput
                   sx={{ height: "2.8rem" }}
                   id="outlined-adornment-amount"
@@ -414,7 +416,7 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
             mb={2}
           >
             <MDTypography variant="caption" color="text">
-              Bank Name:&nbsp;&nbsp;&nbsp;
+              Product Name:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="button" fontWeight="medium" textTransform="capitalize">
                 {name}
               </MDTypography>
@@ -430,7 +432,14 @@ function Bill({ name, contactNo, address, image, noGutter, dataId }) {
                 <Icon>edit</Icon>&nbsp;edit
               </MDButton>
             </MDBox>
-
+          </MDBox>
+          <MDBox mb={1} lineHeight={0}>
+            <MDTypography variant="caption" color="text">
+              Category:&nbsp;&nbsp;&nbsp;
+              <MDTypography variant="caption" fontWeight="medium">
+                {category}
+              </MDTypography>
+            </MDTypography>
           </MDBox>
           <MDBox mb={1} lineHeight={0}>
             <MDTypography variant="caption" color="text">

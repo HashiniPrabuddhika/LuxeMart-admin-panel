@@ -96,7 +96,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
   React.useEffect(() => {
     const uploadFile = () => {
       const name = file.name
-      const storageRef = ref(storage, `brands/${name}`);
+      const storageRef = ref(storage, `products/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on('state_changed',
         (snapshot) => {
@@ -124,7 +124,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
   const fetchDataById = async (dataId) => {
     // get data from firestore
     try {
-      const getBrands = await getDoc(doc(db, "brands", dataId));
+      const getBrands = await getDoc(doc(db, "products", dataId));
       if (getBrands.exists()) {
         setDbBrandsData(getBrands.data())
       } else {
@@ -163,7 +163,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
   const fetchAllSalesBrandCarousels = async () => {
     // get data from database
     try {
-      const q = query(collection(db, "sales"), where("brand.uid", "==", dataId));
+      const q = query(collection(db, "sales"), where("products.uid", "==", dataId));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         setSaleId(doc.id)
@@ -176,7 +176,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
         Object.assign(carouselIdObj, dbData[i]);
       }
       setCarouselId(carouselIdObj.id)
-      const query2 = query(collection(db, "discounts"), where("brand.uid", "==", dataId));
+      const query2 = query(collection(db, "discounts"), where("products.uid", "==", dataId));
       const querySnapshotCarousel = await getDocs(query2);
       querySnapshotCarousel.forEach((doc) => {
         setDiscountsId(doc.id)
@@ -197,7 +197,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
     }
     try {
       if (dataId) {
-        const reference = doc(db, 'brands', dataId)
+        const reference = doc(db, 'products', dataId)
         await deleteDoc(reference)
       }
       if (saleId) {
@@ -212,7 +212,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
         const reference = doc(db, 'discounts', discountsId)
         await deleteDoc(reference)
       }
-      navigate("/admin/brands")
+      navigate("/admin/products")
     } catch (error) {
       console.log('error == ', error)
     }
@@ -253,7 +253,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
     try {
       setLoading(true)
       if (dataId) {
-        const brandsDocRef = doc(db, "brands", dataId)
+        const brandsDocRef = doc(db, "products", dataId)
         await setDoc(brandsDocRef, updateData)
       }
       if (saleId) {
@@ -349,7 +349,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
               <CardMedia
                 src={logo}
                 component="img"
-                title="Brand Logo"
+                title="Product Logo"
                 sx={{
                   maxWidth: "100%",
                   margin: 0,
@@ -381,7 +381,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
             autoComplete="off"
           >
             <TextField
-              label="Brand Name"
+              label="Product Name"
               type="text"
               color="secondary"
               required
@@ -392,7 +392,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
               })}
             />
             <TextField
-              label="Contact Number"
+              label="Unit Price"
               type="number"
               color="secondary"
               required
@@ -402,25 +402,15 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
                 contactNo: e.target.value
               })}
             />
-            <TextField
-              label="Website URL"
-              type='url'
-              color="secondary"
-              required
-              value={dbBrandsData.website}
-              onChange={(e) => setDbBrandsData({
-                ...dbBrandsData,
-                website: e.target.value
-              })}
-            />
+           
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth >
-                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Brand Category</InputLabel>
+                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Product Category</InputLabel>
                 <Select
                   sx={{ height: "2.8rem" }}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Select Brand Category"
+                  label="Select Product Category"
                   value={dbBrandsData.category}
                   onChange={(e) => setDbBrandsData({
                     ...dbBrandsData,
@@ -435,7 +425,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
                 </Select>
               </FormControl>
               <FormControl fullWidth sx={{ mt: 2 }} >
-                <InputLabel htmlFor="outlined-adornment-amount" >Brand Logo</InputLabel>
+                <InputLabel htmlFor="outlined-adornment-amount" >Product Logo</InputLabel>
                 <OutlinedInput
                   sx={{ height: "2.8rem" }}
                   id="outlined-adornment-amount"
@@ -467,7 +457,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
                         {imageProgressValue === 100 ? <CheckIcon /> : null}
                       </Box>
                     </Box></>}
-                  label="Brand Logo"
+                  label="Product Logo"
                 />
               </FormControl>
             </Box>
@@ -526,7 +516,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
             mb={2}
           >
             <MDTypography variant="caption" color="text">
-              Brand Name:&nbsp;&nbsp;&nbsp;
+            Product Name:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="button" fontWeight="medium" textTransform="capitalize">
                 {name}
               </MDTypography>

@@ -7,7 +7,7 @@ import Card from "@mui/material/Card";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import Icon from "@mui/material/Icon";
-import { CircularProgress, OutlinedInput, InputAdornment, IconButton, DialogActions, Dialog, DialogTitle, DialogContent, Typography, Box, TextField, InputLabel, FormControl } from '@mui/material'
+import { CircularProgress, OutlinedInput, InputAdornment, IconButton, DialogActions, Dialog, DialogTitle, DialogContent, Typography, Box, TextField, InputLabel, FormControl,Select, MenuItem } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -26,7 +26,7 @@ import banksNameTable from "layouts/banks/data/banksNameTable";
 
 //firestore 
 import { db, storage } from "../../firebase"
-import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs,doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { green } from "@mui/material/colors";
 
@@ -77,15 +77,33 @@ function Banks() {
   const [bankFile, setBankFile] = React.useState('')
   const [banksData, setBanksData] = React.useState({
     name: '',
-    contactNo: '',
+    currentPrice: '',
     address: '',
+    category: '',
   })
+
+  const [categoriesDropdown, setCategoriesDropdown] = React.useState([]);
+
+  // Fetch all categories from Firestore
+  const fetchAllCategories = async () => {
+    try {
+      const getAllDocs = await getDocs(collection(db, "categories"));
+      const dbData = getAllDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setCategoriesDropdown(dbData);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchAllCategories();
+  }, []);
 
   // bankFile upload
   React.useEffect(() => {
     const uploadBankFile = () => {
       const name = bankFile.name
-      const storageRef = ref(storage, `banks/${name}`);
+      const storageRef = ref(storage, `discountproducts/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, bankFile);
       uploadTask.on('state_changed',
         (snapshot) => {
@@ -115,9 +133,9 @@ function Banks() {
     //post data into firestore
     try {
       setLoading(true)
-      const docId = await addDoc(collection(db, "banks"), {
+      const docId = await addDoc(collection(db, "discountproducts"), {
         name: banksData.name.toLowerCase().replace(/\s+/g, '').trim(),
-        contactNo: banksData.contactNo,
+        currentPrice: banksData.currentPrice,
         address: banksData.address,
         image: banksData.image,
         cards: []
@@ -125,14 +143,15 @@ function Banks() {
       const updateData = {
         uid: docId.id
       }
-      const DocRef = doc(db, "banks", docId.id)
+      const DocRef = doc(db, "discountproducts", docId.id)
       await setDoc(DocRef, updateData, { merge: true })
       bankModalClose()
       bankNotificationOpen()
       setBanksData({
         name: '',
-        contactNo: '',
+        currentPrice: '',
         address: '',
+        category: '',
       })
       setImageProgress(0)
       setImageProgressValue(0)
@@ -171,7 +190,7 @@ function Banks() {
         open={bankModal}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={bankModalClose}>
-          <Typography variant="h3" color="secondary.main" sx={{ pt: 1, textAlign: "center" }}>Add Bank</Typography>
+          <Typography variant="h3" color="secondary.main" sx={{ pt: 1, textAlign: "center" }}>Add Discount Product</Typography>
         </BootstrapDialogTitle>
         <DialogContent dividers>
           <Box
@@ -183,7 +202,7 @@ function Banks() {
             autoComplete="off"
           >
             <TextField
-              label="Bank Name"
+              label="Product Name"
               type="text"
               rows={1}
               color="secondary"
@@ -195,7 +214,7 @@ function Banks() {
               })}
             />
             <TextField
-              label="Contact Number"
+              label="Current Price Rs."
               type="number"
               rows={1}
               color="secondary"
@@ -219,8 +238,26 @@ function Banks() {
               })}
             />
             <Box sx={{ maxWidth: "100%", m: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="outlined-adornment-amount">Bank Image</InputLabel>
+            <FormControl fullWidth>
+                <InputLabel id="category-select-label" sx={{ height: "2.8rem" }} required>Select Category</InputLabel>
+                <Select
+                  sx={{ height: "2.8rem" }}
+                  labelId="category-select-label"
+                  id="category-select"
+                  label="Select Category"
+                  value={banksData.category}
+                  onChange={(e) => setBanksData({
+                    ...banksData,
+                    category: e.target.value
+                  })}
+                >
+                  {categoriesDropdown.map((item) => (
+                    <MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel htmlFor="outlined-adornment-amount">Product Image</InputLabel>
                 <OutlinedInput
                   sx={{ height: "2.8rem" }}
                   id="outlined-adornment-amount"
@@ -252,7 +289,7 @@ function Banks() {
                         {imageProgressValue === 100 ? <CheckIcon /> : null}
                       </Box>
                     </Box></>}
-                  label="Bank Image"
+                  label="Product Image"
                 />
               </FormControl>
             </Box>
@@ -278,6 +315,9 @@ function Banks() {
           </Box>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
+        <MDButton variant="contained" color="error" onClick={bankModalClose}>
+            Close
+          </MDButton>
           {loading ?
             <CircularProgress
               size={30}

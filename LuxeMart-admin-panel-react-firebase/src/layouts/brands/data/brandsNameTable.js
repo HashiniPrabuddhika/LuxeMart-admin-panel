@@ -14,7 +14,7 @@ function Data() {
   const [data, setData] = React.useState([])
 
   React.useEffect(() => {
-    const fetchData = onSnapshot(collection(db, "brands"),
+    const fetchData = onSnapshot(collection(db, "products"),
       (snapshot) => {
         const brandList = snapshot.docs.map((items) => {
           return { id: items.id, ...items.data() }
@@ -54,14 +54,14 @@ function Data() {
   return {
     columns: [
       { Header: "SR NO#", accessor: "srNo", width: '10%', align: "left" },
-      { Header: "Name", accessor: "brands", align: "left" },
+      { Header: "Name", accessor: "products", align: "left" },
       { Header: "Action", accessor: "action", align: "right" }
     ],
     rows: [...data.map((items, index) => {
       return ({
         srNo: <SR_NO srNo={index + 1} />,
-        brands: <BRAND_NAME image={items.logo} name={items.name} />,
-        action: <Link to={`/admin/brands/detail/${items.id}`}><MDButton variant="gradient" color="info" size="small">Detail</MDButton></Link>,
+        products: <BRAND_NAME image={items.logo} name={items.name} />,
+        action: <Link to={`/admin/products/detail/${items.id}`}><MDButton variant="gradient" color="info" size="small">Detail</MDButton></Link>,
       })
     })]
   }

@@ -87,7 +87,7 @@ function Brands() {
   React.useEffect(() => {
     const uploadFile = () => {
       const name = file.name
-      const storageRef = ref(storage, `brands/${name}`);
+      const storageRef = ref(storage, `products/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on('state_changed',
         (snapshot) => {
@@ -137,7 +137,7 @@ function Brands() {
     //post data into firestore
     try {
       setLoading(true)
-      const docId = await addDoc(collection(db, "brands"), {
+      const docId = await addDoc(collection(db, "products"), {
         name: brandsData.name,
         contactNo: brandsData.contactNo,
         website: brandsData.website,
@@ -147,7 +147,7 @@ function Brands() {
       const updateData = {
         uid: docId.id
       }
-      const DocRef = doc(db, "brands", docId.id)
+      const DocRef = doc(db, "products", docId.id)
       await setDoc(DocRef, updateData, { merge: true })
       brandsModalClose()
       brandsNotificationOpen()
@@ -194,7 +194,7 @@ function Brands() {
         open={brandsModal}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={brandsModalClose}>
-          <Typography variant="h3" color="secondary.main" sx={{ pt: 1, textAlign: "center" }}>Add Brand</Typography>
+          <Typography variant="h3" color="secondary.main" sx={{ pt: 1, textAlign: "center" }}>Add Product</Typography>
         </BootstrapDialogTitle>
         <DialogContent dividers>
           <Box
@@ -206,7 +206,7 @@ function Brands() {
             autoComplete="off"
           >
             <TextField
-              label="Brand Name"
+              label="Product Name"
               type="text"
               rows={1}
               color="secondary"
@@ -218,7 +218,7 @@ function Brands() {
               })}
             />
             <TextField
-              label="Contact Number"
+              label="Unit Price"
               type="number"
               rows={1}
               color="secondary"
@@ -229,26 +229,15 @@ function Brands() {
                 contactNo: e.target.value
               })}
             />
-            <TextField
-              label="Website URL"
-              type='url'
-              rows={1}
-              color="secondary"
-              required
-              value={brandsData.website}
-              onChange={(e) => setBrandsData({
-                ...brandsData,
-                website: e.target.value
-              })}
-            />
+
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth >
-                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Brand Category</InputLabel>
+                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Product Category</InputLabel>
                 <Select
                   sx={{ height: "2.8rem" }}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Select Brand Category"
+                  label="Select Product Category"
                   value={brandsData.category}
                   onChange={(e) => setBrandsData({
                     ...brandsData,
@@ -263,7 +252,7 @@ function Brands() {
                 </Select>
               </FormControl>
               <FormControl fullWidth sx={{ mt: 2 }} >
-                <InputLabel htmlFor="outlined-adornment-amount" >Brand Logo</InputLabel>
+                <InputLabel htmlFor="outlined-adornment-amount" >Product Logo</InputLabel>
                 <OutlinedInput
                   sx={{ height: "2.8rem" }}
                   id="outlined-adornment-amount"
@@ -295,7 +284,7 @@ function Brands() {
                         {imageProgressValue === 100 ? <CheckIcon /> : null}
                       </Box>
                     </Box></>}
-                  label="Brand Logo"
+                  label="Product Logo"
                 />
 
               </FormControl>
@@ -355,14 +344,14 @@ function Brands() {
                   >
                     <MDBox pt={2} pb={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
                       <MDTypography variant="h6" fontWeight="medium" color="white">
-                        All Brands
+                        All Products
                       </MDTypography>
                       <MDButton variant="gradient" color="light"
                         onClick={() => {
                           brandsModalOpen()
                         }}>
                         <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                        &nbsp;ADD BRAND
+                        &nbsp;ADD Product
                       </MDButton>
                     </MDBox>
                   </MDBox>

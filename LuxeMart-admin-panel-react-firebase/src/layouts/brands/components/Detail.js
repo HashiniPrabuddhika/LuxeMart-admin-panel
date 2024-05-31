@@ -23,7 +23,7 @@ function Detail() {
   const { id } = useParams()
 
   React.useEffect(() => {
-    const fetchDataById = onSnapshot(doc(db, "brands", id),
+    const fetchDataById = onSnapshot(doc(db, "products", id),
       (doc) => (setData(doc.data())),
       (error) => {
         console.log("error == ", error.code)
@@ -45,7 +45,7 @@ function Detail() {
                 <Card>
                   <MDBox pt={3} px={2}>
                     <MDTypography variant="h6" fontWeight="medium" sx={{ textAlign: 'center' }}>
-                      Brand Detail
+                      Product Detail
                     </MDTypography>
                   </MDBox>
                   <MDBox pt={1} pb={2} px={2}>
