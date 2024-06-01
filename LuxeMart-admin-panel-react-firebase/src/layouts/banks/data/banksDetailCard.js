@@ -10,6 +10,7 @@ import CheckIcon from '@mui/icons-material/Check';
 
 // Admin panel React components
 import MDBox from "components/MDBox";
+import MDInput from "components/MDInput";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import CloseIcon from '@mui/icons-material/Close';
@@ -73,7 +74,7 @@ const style = {
   boxShadow: 24,
 };
 
-function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
+function Bill({ name, currentPrice, address, category,image, noGutter, dataId }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [deleteAlert, setDeleteAlert] = React.useState(false);
@@ -165,10 +166,12 @@ function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
     //put data into firestore
     const updateData = {
       name: dbBanksData.nametoLowerCase().replace(/\s+/g, '').trim(),
-      contactNo: dbBanksData.contactNo,
+      currentPrice: dbBanksData.currentPrice,
       category: dbBanksData.category,
       address: dbBanksData.address,
-      image: dbBanksData.image
+      image: dbBanksData.image,
+      startDate: dbBanksData.startDate,
+      endDate: dbBanksData.endDate,
     }
     try {
       setLoading(true)
@@ -273,10 +276,10 @@ function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
               type="number"
               color="secondary"
               required
-              value={dbBanksData.contactNo}
+              value={dbBanksData.currentPrice}
               onChange={(e) => setDbBanksData({
                 ...dbBanksData,
-                contactNo: e.target.value
+                currentPrice: e.target.value
               })}
             />
             <TextField
@@ -290,6 +293,31 @@ function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
                 address: e.target.value
               })}
             />
+             <MDInput
+  type="date"
+  label="Discount Start Date"
+  InputLabelProps={{
+    shrink: true,
+  }}
+  value={dbBanksData.startDate}
+  onChange={(e) => setDbBanksData({
+    ...dbBanksData,
+    startDate: e.target.value
+  })}
+/>
+<MDInput
+  type="date"
+  label="Discount End Date"
+  InputLabelProps={{
+    shrink: true,
+  }}
+  value={dbBanksData.endDate}
+  onChange={(e) =>setDbBanksData({
+    ...dbBanksData,
+    endDate: e.target.value
+  })}
+/>
+
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="outlined-adornment-amount">Product Image</InputLabel>
@@ -324,7 +352,7 @@ function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
                         {imageProgressValue === 100 ? <CheckIcon /> : null}
                       </Box>
                     </Box></>}
-                  label="Bank Image"
+                  label="Product Image"
                 />
               </FormControl>
             </Box>
@@ -383,7 +411,7 @@ function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
               <CardMedia
                 src={image}
                 component="img"
-                title="Bank Image"
+                title="Product Image"
                 sx={{
                   maxWidth: "100%",
                   margin: 0,
@@ -443,12 +471,29 @@ function Bill({ name, contactNo, address, category,image, noGutter, dataId }) {
           </MDBox>
           <MDBox mb={1} lineHeight={0}>
             <MDTypography variant="caption" color="text">
-              Contact Number:&nbsp;&nbsp;&nbsp;
+            Current Price:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
-                {contactNo}
+                {currentPrice}
               </MDTypography>
             </MDTypography>
           </MDBox>
+          <MDBox mb={1} lineHeight={0}>
+  <MDTypography variant="caption" color="text">
+    Start Date:&nbsp;&nbsp;&nbsp;
+    <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
+      {dbBanksData.startDate}
+    </MDTypography>
+  </MDTypography>
+</MDBox>
+<MDBox mb={1} lineHeight={0}>
+  <MDTypography variant="caption" color="text">
+    End Date:&nbsp;&nbsp;&nbsp;
+    <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
+      {dbBanksData.endDate}
+    </MDTypography>
+  </MDTypography>
+</MDBox>
+
           <MDBox mb={0} lineHeight={0}>
             <MDTypography variant="caption" color="text">
               Address:&nbsp;&nbsp;&nbsp;
@@ -477,8 +522,10 @@ Bill.defaultProps = {
 // Typechecking props for the Bill
 Bill.propTypes = {
   name: PropTypes.string.isRequired,
-  contactNo: PropTypes.string.isRequired,
+  currentPrice: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired,
   address: PropTypes.string.isRequired,
+  dataId: PropTypes.string.isRequired,
   noGutter: PropTypes.bool,
 };
 

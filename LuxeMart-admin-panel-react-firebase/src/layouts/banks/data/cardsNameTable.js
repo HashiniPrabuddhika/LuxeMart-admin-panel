@@ -140,6 +140,8 @@ function Data(dataId) {
         name: delDbBankCard.name,
         category: delDbBankCard.category,
         image: delDbBankCard.image,
+        start_date:delDbBankCard.start_date,
+        end_date:delDbBankCard.end_date,
       })
     }
     const updateData = {
@@ -147,6 +149,8 @@ function Data(dataId) {
         name: UpdateDbBankCard.name,
         category: UpdateDbBankCard.category,
         image: UpdateDbBankCard.image,
+        start_date:delDbBankCard.start_date,
+        end_date:delDbBankCard.end_date,
       })
     }
     try {
@@ -186,6 +190,8 @@ function Data(dataId) {
         name: delDbBankCard.name,
         category: delDbBankCard.category,
         image: delDbBankCard.image,
+        start_date:delDbBankCard.start_date,
+        end_date:delDbBankCard.end_date,
       })
     }
     try {
@@ -233,6 +239,17 @@ function Data(dataId) {
     </MDBox>
   );
 
+  const DATE_DISPLAY = ({ label, value }) => (
+    <MDBox mb={1} lineHeight={0}>
+      <MDTypography variant="caption" color="text">
+        {label}:&nbsp;&nbsp;&nbsp;
+        <MDTypography variant="caption" fontWeight="medium" >
+          {value}
+        </MDTypography>
+      </MDTypography>
+    </MDBox>
+  );
+
   const bankCardModalOpen = (index) => {
     setBankCardModal(true)
     let dbCardsData = data.filter((items, itemsIndex) => {
@@ -240,7 +257,9 @@ function Data(dataId) {
         return {
           name: items.name,
           category: items.category,
-          image: items.image
+          image: items.image,
+          start_date:items.start_date,
+          end_date:items.end_date
         }
       }
       return false
@@ -266,7 +285,9 @@ function Data(dataId) {
         return {
           name: items.name,
           category: items.category,
-          image: items.image
+          image: items.image,
+          start_date:items.start_date,
+          end_date:items.end_date
         }
       }
       return false
@@ -285,6 +306,8 @@ function Data(dataId) {
       { Header: "SR NO#", accessor: "srNo", width: '10%', align: "left" },
       { Header: "Card Name", accessor: "cards", align: "left" },
       { Header: "Category", accessor: "category", align: "left" },
+      { Header: "Discout Start Date", accessor: "start_date", align: "left" },
+      { Header: "Discout End Date", accessor: "end_date", align: "left" },
       { Header: "Action", accessor: "action", align: "right" }
 
     ],
@@ -293,6 +316,8 @@ function Data(dataId) {
         srNo: <SR_NO srNo={index + 1} />,
         cards: <CARD_NAME image={items.image} name={items.name} />,
         category: <CATEGORY name={items.category} />,
+        start_date: <DATE_DISPLAY label="Start Date" value={items.start_date} />,
+        end_date: <DATE_DISPLAY label="End Date" value={items.end_date} />,
         action: (<>
           <MDSnackbar
             color="success"
@@ -379,6 +404,34 @@ function Data(dataId) {
                     })
                   }}
                 />
+                <TextField
+                  label="Discount Start Date"
+                  type="date"
+                  color="secondary"
+                  required
+                  value={UpdateDbBankCard.start_date}
+                  onChange={(e) => {
+                    setUpdateDbBankCard({
+                      ...UpdateDbBankCard,
+                      start_date: e.target.value
+                    })
+                  }}
+                />
+
+                <TextField
+                  label="Discount End Date"
+                  type="date"
+                  color="secondary"
+                  required
+                  value={UpdateDbBankCard.end_date}
+                  onChange={(e) => {
+                    setUpdateDbBankCard({
+                      ...UpdateDbBankCard,
+                      end_date: e.target.value
+                    })
+                  }}
+                />
+               
                 <Box sx={{ maxWidth: "100%", m: 2 }}>
                   <FormControl fullWidth>
                     <InputLabel htmlFor="outlined-adornment-amount">Card Image</InputLabel>

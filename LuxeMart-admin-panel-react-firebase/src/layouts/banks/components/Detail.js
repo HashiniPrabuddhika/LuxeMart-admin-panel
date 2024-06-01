@@ -13,6 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import MDSnackbar from "components/MDSnackbar";
+import MDInput from "components/MDInput";
 import CheckIcon from '@mui/icons-material/Check';
 
 // Admin panel React example components
@@ -83,8 +84,14 @@ function Detail() {
   const [discountsId, setDiscountsId] = React.useState('')
   const [dbBankCard, setDbBankCard] = React.useState({
     name: '',
-    category: ''
+    category: '',
+    
   })
+  const [dbDiscountData, setDbDiscountData] = React.useState({
+    startDate: '',
+    endDate: ''
+  });
+  
 
   // bankCardFile upload
   React.useEffect(() => {
@@ -158,6 +165,8 @@ function Detail() {
         name: dbBankCard.name,
         category: dbBankCard.category,
         image: dbBankCard.image,
+        startDate: dbDiscountData.startDate,
+        endDate: dbDiscountData.endDate,
       })
     }
     try {
@@ -175,7 +184,11 @@ function Detail() {
       setDbBankCard({
         name: '',
         category: ''
-      })
+      });
+      setDbDiscountData({
+        startDate: '',
+        endDate: ''
+      });
       setImageProgress(0)
       setImageProgressValue(0)
     }
@@ -225,7 +238,7 @@ function Detail() {
             autoComplete="off"
           >
             <TextField
-              label="Discount Products"
+              label="Discount Product"
               InputProps={{
                 readOnly: true,
               }}
@@ -233,7 +246,7 @@ function Detail() {
               required
               value={selectedBankName.name}
             />
-            <TextField
+            {/* <TextField
               label="Card Name"
               type="text"
               color="secondary"
@@ -245,7 +258,7 @@ function Detail() {
                   name: e.target.value
                 })
               }}
-            />
+            /> */}
             <TextField
               label="Card Category"
               type="text"
@@ -259,6 +272,31 @@ function Detail() {
                 })
               }}
             />
+            <MDInput
+  type="date"
+  label="Discount Start Date"
+  InputLabelProps={{
+    shrink: true,
+  }}
+  value={dbDiscountData.startDate}
+  onChange={(e) => setDbDiscountData({
+    ...dbDiscountData,
+    startDate: e.target.value
+  })}
+/>
+<MDInput
+  type="date"
+  label="Discount End Date"
+  InputLabelProps={{
+    shrink: true,
+  }}
+  value={dbDiscountData.endDate}
+  onChange={(e) => setDbDiscountData({
+    ...dbDiscountData,
+    endDate: e.target.value
+  })}
+/>
+
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="outlined-adornment-amount">Card Image</InputLabel>
@@ -347,7 +385,7 @@ function Detail() {
                     <MDBox component="ul" display="flex" flexDirection="column" p={0} m={0}>
                       {data && <Bill
                         name={data.name}
-                        contactNo={data.contactNo}
+                        currentPrice={data.currentPrice}
                         address={data.address}
                         image={data.image}
                         dataId={id}

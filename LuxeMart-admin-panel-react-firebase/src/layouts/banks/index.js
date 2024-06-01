@@ -1,36 +1,36 @@
 // @mui material components
 import Grid from "@mui/material/Grid";
-
-// Admin panel React components
-import MDBox from "components/MDBox"
 import Card from "@mui/material/Card";
-import MDTypography from "components/MDTypography";
-import MDButton from "components/MDButton";
-import Icon from "@mui/material/Icon";
-import { CircularProgress, OutlinedInput, InputAdornment, IconButton, DialogActions, Dialog, DialogTitle, DialogContent, Typography, Box, TextField, InputLabel, FormControl,Select, MenuItem } from '@mui/material'
+import { CircularProgress, OutlinedInput, InputAdornment, IconButton, DialogActions, Dialog, DialogTitle, DialogContent, Typography, Box, TextField, InputLabel, FormControl, Select, MenuItem } from '@mui/material';
+import { green } from "@mui/material/colors";
 import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import CheckIcon from '@mui/icons-material/Check';
+import Icon from "@mui/material/Icon";
+import * as React from 'react';
+
+// Admin panel React components
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
+import MDSnackbar from "components/MDSnackbar";
 
 // Admin panel React example components
-import * as React from 'react';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
-import MDSnackbar from "components/MDSnackbar";
 
 // Data
 import banksNameTable from "layouts/banks/data/banksNameTable";
 
-//firestore 
-import { db, storage } from "../../firebase"
-import { collection, addDoc, getDocs,doc, setDoc } from "firebase/firestore";
+// Firestore 
+import { db, storage } from "../../firebase";
+import { collection, addDoc, getDocs, doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { green } from "@mui/material/colors";
 
-//modal Styles
+// Modal Styles
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -39,6 +39,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
 function BootstrapDialogTitle(props) {
   const { children, onClose, ...other } = props;
   return (
@@ -61,6 +62,7 @@ function BootstrapDialogTitle(props) {
     </DialogTitle>
   );
 }
+
 BootstrapDialogTitle.propTypes = {
   children: PropTypes.node,
   onClose: PropTypes.func.isRequired,
@@ -74,13 +76,15 @@ function Banks() {
   const [error, setError] = React.useState('');
   const [imageProgress, setImageProgress] = React.useState(0);
   const [imageProgressValue, setImageProgressValue] = React.useState(0);
-  const [bankFile, setBankFile] = React.useState('')
+  const [bankFile, setBankFile] = React.useState('');
   const [banksData, setBanksData] = React.useState({
     name: '',
     currentPrice: '',
     address: '',
     category: '',
-  })
+    startDate: '',
+    endDate: '',
+  });
 
   const [categoriesDropdown, setCategoriesDropdown] = React.useState([]);
 
@@ -99,87 +103,88 @@ function Banks() {
     fetchAllCategories();
   }, []);
 
-  // bankFile upload
+  // BankFile upload
   React.useEffect(() => {
     const uploadBankFile = () => {
-      const name = bankFile.name
+      const name = bankFile.name;
       const storageRef = ref(storage, `discountproducts/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, bankFile);
       uploadTask.on('state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageProgress(progress)
-          setImageProgressValue(progress)
+          setImageProgress(progress);
+          setImageProgressValue(progress);
         },
         (error) => {
-          console.log("ERROR == ", error)
+          console.log("ERROR == ", error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setBanksData((prev) => ({
               ...prev,
-              image: downloadURL
-            }))
+              image: downloadURL,
+            }));
           });
         }
       );
-
-    }
-    bankFile && uploadBankFile()
-  }, [bankFile])
+    };
+    bankFile && uploadBankFile();
+  }, [bankFile]);
 
   const onAddBank = async (e) => {
-    e.preventDefault()
-    //post data into firestore
+    e.preventDefault();
+    // Post data into Firestore
     try {
-      setLoading(true)
+      setLoading(true);
       const docId = await addDoc(collection(db, "discountproducts"), {
         name: banksData.name.toLowerCase().replace(/\s+/g, '').trim(),
         currentPrice: banksData.currentPrice,
         address: banksData.address,
         image: banksData.image,
+        startDate: banksData.startDate,
+        endDate: banksData.endDate,
         cards: []
-      })
+      });
       const updateData = {
         uid: docId.id
-      }
-      const DocRef = doc(db, "discountproducts", docId.id)
-      await setDoc(DocRef, updateData, { merge: true })
-      bankModalClose()
-      bankNotificationOpen()
+      };
+      const DocRef = doc(db, "discountproducts", docId.id);
+      await setDoc(DocRef, updateData, { merge: true });
+      bankModalClose();
+      bankNotificationOpen();
       setBanksData({
         name: '',
         currentPrice: '',
         address: '',
         category: '',
-      })
-      setImageProgress(0)
-      setImageProgressValue(0)
+        startDate: '',
+        endDate: '',
+      });
+      setImageProgress(0);
+      setImageProgressValue(0);
+    } catch (error) {
+      setError(error.code);
+      setLoading(false);
     }
-    catch (error) {
-      setError(error.code)
-      setLoading(false)
-    }
-  }
+  };
 
   const bankModalOpen = () => setBankModal(true);
   const bankModalClose = () => {
-    setBankModal(false)
-    setLoading(false)
-    setError('')
-    setImageProgress(0)
-    setImageProgressValue(0)
+    setBankModal(false);
+    setLoading(false);
+    setError('');
+    setImageProgress(0);
+    setImageProgressValue(0);
   };
   const bankNotificationOpen = () => setBankNotification(true);
   const bankNotificationClose = () => setBankNotification(false);
+
   return (
     <>
       <MDSnackbar
         color="success"
         icon="check"
         title="Successfully Add"
-        // content="Hello, world! This is a bankNotification message"
-        // dateTime="11 mins ago"
         open={bankNotification}
         onClose={bankNotificationClose}
         close={bankNotificationClose}
@@ -219,10 +224,10 @@ function Banks() {
               rows={1}
               color="secondary"
               required
-              value={banksData.contactNo}
+              value={banksData.currentPrice}
               onChange={(e) => setBanksData({
                 ...banksData,
-                contactNo: e.target.value
+                currentPrice: e.target.value
               })}
             />
             <TextField
@@ -238,7 +243,7 @@ function Banks() {
               })}
             />
             <Box sx={{ maxWidth: "100%", m: 2 }}>
-            <FormControl fullWidth>
+              <FormControl fullWidth>
                 <InputLabel id="category-select-label" sx={{ height: "2.8rem" }} required>Select Category</InputLabel>
                 <Select
                   sx={{ height: "2.8rem" }}
@@ -293,6 +298,30 @@ function Banks() {
                 />
               </FormControl>
             </Box>
+            <TextField
+              label="Start Date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              margin="normal"
+              value={banksData.startDate}
+              onChange={(e) => setBanksData({
+                ...banksData,
+                startDate: e.target.value
+              })}
+            />
+            <TextField
+              label="End Date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              margin="normal"
+              value={banksData.endDate}
+              onChange={(e) => setBanksData({
+                ...banksData,
+                endDate: e.target.value
+              })}
+            />
             {error === '' ? null :
               <MDBox mb={2} p={1}>
                 <TextField
@@ -307,7 +336,6 @@ function Banks() {
                       }
                     }
                   }}
-                  // defaultValue="Invalid Data!"
                   value={error}
                   variant="standard"
                 />
@@ -315,7 +343,7 @@ function Banks() {
           </Box>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
-        <MDButton variant="contained" color="error" onClick={bankModalClose}>
+          <MDButton variant="contained" color="error" onClick={bankModalClose}>
             Close
           </MDButton>
           {loading ?
@@ -325,7 +353,6 @@ function Banks() {
                 color: green[500],
               }}
             /> : <MDButton variant="contained" color="info" type="submit"
-              // disabled={banksData.name === '' || banksData.contactNo === '' || banksData.address === '' || banksData.image === '' ? true : false}
               onClick={onAddBank}
             >Save</MDButton>
           }
@@ -354,9 +381,7 @@ function Banks() {
                         All DISCOUNT PRODUCTS
                       </MDTypography>
                       <MDButton variant="gradient" color="light"
-                        onClick={() => {
-                          bankModalOpen()
-                        }}>
+                        onClick={bankModalOpen}>
                         <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                         &nbsp;ADD DISCOUNT PRODUCTS
                       </MDButton>
