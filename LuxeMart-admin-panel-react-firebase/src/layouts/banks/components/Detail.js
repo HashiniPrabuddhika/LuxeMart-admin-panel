@@ -378,14 +378,14 @@ function Detail() {
                 <Card>
                   <MDBox pt={3} px={2}>
                     <MDTypography variant="h6" fontWeight="medium" sx={{ textAlign: 'center' }}>
-                      Product Detail
+                    Discount Product Detail
                     </MDTypography>
                   </MDBox>
                   <MDBox pt={1} pb={2} px={2}>
                     <MDBox component="ul" display="flex" flexDirection="column" p={0} m={0}>
                       {data && <Bill
                         name={data.name}
-                        currentPrice={data.currentPrice}
+                        price={data.price}
                         address={data.address}
                         image={data.image}
                         dataId={id}

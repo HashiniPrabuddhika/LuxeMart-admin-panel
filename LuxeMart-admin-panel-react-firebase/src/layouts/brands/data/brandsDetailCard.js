@@ -67,12 +67,12 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  bgcolor: 'background.paper',
+  bgcolor: 'bacKGround.paper',
   border: '1px solid #000',
   borderRadius: '1rem',
   boxShadow: 24,
 };
-function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
+function Bill({ name, price, website, category, logo, noGutter, dataId }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [brandsModal, setBrandsModal] = React.useState(false);
@@ -90,6 +90,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
   const [discountsId, setDiscountsId] = React.useState('')
   const [carouselData, setCarouselData] = React.useState({})
   const [dbBrandsData, setDbBrandsData] = React.useState({})
+  const [priceUnit, setPriceUnit] = React.useState("unit");
   const navigate = useNavigate()
 
   //file upload
@@ -126,7 +127,8 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
     try {
       const getBrands = await getDoc(doc(db, "products", dataId));
       if (getBrands.exists()) {
-        setDbBrandsData(getBrands.data())
+        setDbBrandsData(getBrands.data());
+        setPriceUnit(getBrands.data().priceUnit || "unit");
       } else {
         console.log("No such document!");
       }
@@ -220,15 +222,25 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
   React.useEffect(() => {
   }, [dataId])
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setDbBrandsData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+  
+
   const onUpdateBrand = async (e) => {
     e.preventDefault()
     //update data into firestore
     const updateData = {
       name: dbBrandsData.name,
-      contactNo: dbBrandsData.contactNo,
-      website: dbBrandsData.website,
+      price: dbBrandsData.price,
+     // website: dbBrandsData.website,
       category: dbBrandsData.category,
-      logo: dbBrandsData.logo
+      logo: dbBrandsData.logo,
+      priceUnit: priceUnit,
     }
     const deleteCarouselData = {
       carousels: arrayRemove({ sale: carouselData })
@@ -237,6 +249,9 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
       carousels: arrayUnion({
         sale: {
           brand: updateData,
+          category: updateData.category,
+        price: updateData.price,
+        name: updateData.name,
           title: carouselData.title,
           percentage: carouselData.percentage,
           startDate: carouselData.startDate,
@@ -340,7 +355,7 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
             sx={{
               display: "flex",
               flexDirection: "column",
-              backgroundColor: "transparent",
+              bacKGroundColor: "transparent",
               boxShadow: "none",
               overflow: "visible",
             }}
@@ -391,40 +406,20 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
                 name: e.target.value
               })}
             />
-            <TextField
-              label="Unit Price"
+            {/* <TextField
+              label="Price"
               type="number"
               color="secondary"
               required
-              value={dbBrandsData.contactNo}
+              value={dbBrandsData.price}
               onChange={(e) => setDbBrandsData({
                 ...dbBrandsData,
-                contactNo: e.target.value
+                price: e.target.value
               })}
-            />
-           
+            /> */}
+
             <Box sx={{ maxWidth: "100%", m: 2 }}>
-              <FormControl fullWidth >
-                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Product Category</InputLabel>
-                <Select
-                  sx={{ height: "2.8rem" }}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Select Product Category"
-                  value={dbBrandsData.category}
-                  onChange={(e) => setDbBrandsData({
-                    ...dbBrandsData,
-                    category: e.target.value
-                  })}
-                >
-                  {categoriesDropdown.map((items) => {
-                    return (
-                      <MenuItem key={items.id} value={items.name}>{items.name}</MenuItem>
-                    )
-                  })}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth sx={{ mt: 2 }} >
+            <FormControl fullWidth sx={{ mt: 2 }} >
                 <InputLabel htmlFor="outlined-adornment-amount" >Product Logo</InputLabel>
                 <OutlinedInput
                   sx={{ height: "2.8rem" }}
@@ -460,7 +455,56 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
                   label="Product Logo"
                 />
               </FormControl>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Product Category</InputLabel>
+                <Select
+                  sx={{ height: "2.8rem" }}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Select Product Category"
+                  value={dbBrandsData.category}
+                  onChange={(e) => setDbBrandsData({
+                    ...dbBrandsData,
+                    category: e.target.value
+                  })}
+                >
+                  {categoriesDropdown.map((items) => {
+                    return (
+                      <MenuItem key={items.id} value={items.name}>{items.name}</MenuItem>
+                    )
+                  })}
+                </Select>
+              </FormControl>
+            
             </Box>
+
+            <TextField
+  label="Price"
+  type="number"
+  color="secondary"
+  required
+  name="price"
+  value={dbBrandsData.price || ""}
+  onChange={handleChange}
+  InputProps={{
+    endAdornment: (
+      <InputAdornment position="end">
+        <FormControl>
+          <Select
+            value={priceUnit}
+            onChange={(e) => setPriceUnit(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Price unit' }}
+          >
+            
+            <MenuItem value="unit">Unit</MenuItem>
+            <MenuItem value="KG">KG</MenuItem>
+          </Select>
+        </FormControl>
+      </InputAdornment>
+    ),
+  }}
+/>
             {error === '' ? null :
               <MDBox mb={2} p={1}>
                 <TextField
@@ -536,20 +580,20 @@ function Bill({ name, contactNo, website, category, logo, noGutter, dataId }) {
           </MDBox>
           <MDBox mb={1} lineHeight={0}>
             <MDTypography variant="caption" color="text">
-              Contact Number:&nbsp;&nbsp;&nbsp;
+            Price:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
-                {contactNo}
+                {price} / {priceUnit}
               </MDTypography>
             </MDTypography>
           </MDBox>
-          <MDBox mb={1} lineHeight={0}>
+          {/* <MDBox mb={1} lineHeight={0}>
             <MDTypography variant="caption" color="text">
               Website:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="caption" fontWeight="medium">
                 {website}
               </MDTypography>
             </MDTypography>
-          </MDBox>
+          </MDBox> */}
           <MDBox mb={0} lineHeight={0}>
             <MDTypography variant="caption" color="text">
               Category:&nbsp;&nbsp;&nbsp;
@@ -578,11 +622,12 @@ Bill.defaultProps = {
 // Typechecking props for the Bill
 Bill.propTypes = {
   name: PropTypes.string.isRequired,
-  contactNo: PropTypes.string.isRequired,
-  website: PropTypes.string.isRequired,
+  price: PropTypes.string.isRequired,
+ // website: PropTypes.string.isRequired,
   category: PropTypes.string.isRequired,
   logo: PropTypes.string.isRequired,
   noGutter: PropTypes.bool,
+  priceUnit: PropTypes.string.isRequired,
 };
 
 export default Bill;

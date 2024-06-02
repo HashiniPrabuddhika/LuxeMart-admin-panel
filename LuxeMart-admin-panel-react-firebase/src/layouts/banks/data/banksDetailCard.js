@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import Icon from "@mui/material/Icon";
 import { useNavigate } from "react-router-dom"
 import * as React from 'react'
-import { Card, CardMedia, Modal, CircularProgress, OutlinedInput, InputAdornment, IconButton, DialogContentText, Button, DialogActions, Dialog, DialogTitle, DialogContent, Typography, Box, TextField, InputLabel, FormControl } from '@mui/material'
+import { Card, CardMedia, Modal, CircularProgress, OutlinedInput, InputAdornment, IconButton, DialogContentText, Button, DialogActions, Dialog, DialogTitle, DialogContent, Typography, Box, TextField, InputLabel, FormControl, Select, MenuItem } from '@mui/material'
 import { green } from "@mui/material/colors";
 import CheckIcon from '@mui/icons-material/Check';
 
@@ -74,13 +74,14 @@ const style = {
   boxShadow: 24,
 };
 
-function Bill({ name, currentPrice, address, category,image, noGutter, dataId }) {
+function Bill({ name, price, address, category,image, noGutter, dataId }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [deleteAlert, setDeleteAlert] = React.useState(false);
   const [bankModal, setBankModal] = React.useState(false);
   const [bankImageModal, setBankImageModal] = React.useState(false);
   const [bankNotification, setBankNotification] = React.useState(false);
+  const [categoriesDropdown, setCategoriesDropdown] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [imageProgress, setImageProgress] = React.useState(0);
@@ -89,7 +90,8 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
   const [dbBanksData, setDbBanksData] = React.useState({})
   const [bankFile, setBankFile] = React.useState('')
   const navigate = useNavigate()
-
+  const [productsDropdown, setProductsDropdown] = React.useState([]);
+ 
   // bankFile upload
   React.useEffect(() => {
     const uploadBankFile = () => {
@@ -142,6 +144,41 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataId])
 
+  const fetchAllProducts = async () => {
+    try {
+      const getAllDocs = await getDocs(collection(db, "products"));
+      const dbData = getAllDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setProductsDropdown(dbData);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchAllBrandsCategories = async () => {
+    // get data from database
+    try {
+      const getAllDocs = await getDocs(collection(db, "categories"));
+      const dbData = getAllDocs.docs.map((items) => ({ id: items.id, ...items.data() }))
+      let allCategories = dbData.map((filterItems) => {
+        return {
+          id: filterItems.id,
+          name: filterItems.name,
+        }
+      })
+      setCategoriesDropdown(allCategories)
+    } catch (error) {
+      console.log('error == ', error)
+    }
+  };
+  React.useEffect(() => {
+    fetchAllBrandsCategories()
+    fetchAllProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+
+  
+
   const deleteById = async (dataId) => {
     // delete data from firestore
     try {
@@ -165,8 +202,8 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
     e.preventDefault()
     //put data into firestore
     const updateData = {
-      name: dbBanksData.nametoLowerCase().replace(/\s+/g, '').trim(),
-      currentPrice: dbBanksData.currentPrice,
+      name: dbBanksData.name,
+      price: dbBanksData.price,
       category: dbBanksData.category,
       address: dbBanksData.address,
       image: dbBanksData.image,
@@ -208,6 +245,8 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
   const bankNotificationClose = () => setBankNotification(false);
   const bankImageModalOpen = () => setBankImageModal(true);
   const bankImageModalClose = () => setBankImageModal(false);
+
+  
   return (
     <>
       <MDSnackbar
@@ -259,30 +298,99 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
             noValidate
             autoComplete="off"
           >
-            <TextField
-              label="Product Name"
-              type="text"
-              color="secondary"
-              required
-              value={dbBanksData.name}
-              onChange={(e) => setDbBanksData({
-                ...dbBanksData,
-                name: e.target.value
-              })}
-            />
+
+<Box sx={{ maxWidth: "100%", m: 2 }}>
+           
+           <FormControl fullWidth>
+             <InputLabel id="product-select-label" sx={{ height: "2.8rem" }} required>Select Product</InputLabel>
+             <Select
+               sx={{ height: "2.8rem" }}
+               labelId="product-select-label"
+               id="product-select"
+               label="Select Product"
+               value={dbBanksData.name}
+               onChange={(e) => setDbBanksData({
+                 ...dbBanksData,
+                 name: e.target.value
+               })}
+             >
+               {productsDropdown.map((item) => (
+                 <MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>
+               ))}
+             </Select>
+           </FormControl>
+         
+           <FormControl fullWidth sx={{ mt: 2 }}>
+             <InputLabel htmlFor="outlined-adornment-amount">Product Image</InputLabel>
+             <OutlinedInput
+               sx={{ height: "2.8rem" }}
+               id="outlined-adornment-amount"
+               startAdornment={<><InputAdornment position="start">
+                 <input multiple type="File"
+                   onChange={(e) => setBankFile(e.target.files[0])}
+                 />
+               </InputAdornment>
+                 <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                   <CircularProgress
+                     variant="determinate"
+                     size={25}
+                     sx={{
+                       color: green[500],
+                     }}
+                     value={imageProgress} />
+                   <Box
+                     sx={{
+                       top: 0,
+                       left: 0,
+                       bottom: 0,
+                       right: 0,
+                       position: 'absolute',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                     }}
+                   >
+                     {imageProgressValue === 100 ? <CheckIcon /> : null}
+                   </Box>
+                 </Box></>}
+               label="Product Image"
+             />
+           </FormControl>
+           <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="demo-simple-select-label" sx={{ height: "2.8rem" }} required>Select Product Category</InputLabel>
+                <Select
+                  sx={{ height: "2.8rem" }}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Select Product Category"
+                  value={dbBanksData.category}
+                  onChange={(e) => setDbBanksData({
+                    ...dbBanksData,
+                    category: e.target.value
+                  })}
+                >
+                  {categoriesDropdown.map((items) => {
+                    return (
+                      <MenuItem key={items.id} value={items.name}>{items.name}</MenuItem>
+                    )
+                  })}
+                </Select>
+              </FormControl>
             
+         </Box>
+           
             <TextField
               label="Current Price"
               type="number"
               color="secondary"
               required
-              value={dbBanksData.currentPrice}
+              value={dbBanksData.price}
               onChange={(e) => setDbBanksData({
                 ...dbBanksData,
-                currentPrice: e.target.value
+                price: e.target.value
               })}
             />
-            <TextField
+            {/* <TextField
               label="Website URL"
               type="url"
               color="secondary"
@@ -292,7 +400,7 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
                 ...dbBanksData,
                 address: e.target.value
               })}
-            />
+            /> */}
              <MDInput
   type="date"
   label="Discount Start Date"
@@ -318,44 +426,7 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
   })}
 />
 
-            <Box sx={{ maxWidth: "100%", m: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="outlined-adornment-amount">Product Image</InputLabel>
-                <OutlinedInput
-                  sx={{ height: "2.8rem" }}
-                  id="outlined-adornment-amount"
-                  startAdornment={<><InputAdornment position="start">
-                    <input multiple type="File"
-                      onChange={(e) => setBankFile(e.target.files[0])}
-                    />
-                  </InputAdornment>
-                    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                      <CircularProgress
-                        variant="determinate"
-                        size={25}
-                        sx={{
-                          color: green[500],
-                        }}
-                        value={imageProgress} />
-                      <Box
-                        sx={{
-                          top: 0,
-                          left: 0,
-                          bottom: 0,
-                          right: 0,
-                          position: 'absolute',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {imageProgressValue === 100 ? <CheckIcon /> : null}
-                      </Box>
-                    </Box></>}
-                  label="Product Image"
-                />
-              </FormControl>
-            </Box>
+          
             {error === '' ? null :
               <MDBox mb={2} p={1}>
                 <TextField
@@ -465,15 +536,15 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
             <MDTypography variant="caption" color="text">
               Category:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="caption" fontWeight="medium">
-                {category}
+                {dbBanksData.category}
               </MDTypography>
             </MDTypography>
           </MDBox>
           <MDBox mb={1} lineHeight={0}>
             <MDTypography variant="caption" color="text">
-            Current Price:&nbsp;&nbsp;&nbsp;
+            Price:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
-                {currentPrice}
+                {price}
               </MDTypography>
             </MDTypography>
           </MDBox>
@@ -494,14 +565,14 @@ function Bill({ name, currentPrice, address, category,image, noGutter, dataId })
   </MDTypography>
 </MDBox>
 
-          <MDBox mb={0} lineHeight={0}>
+          {/* <MDBox mb={0} lineHeight={0}>
             <MDTypography variant="caption" color="text">
               Address:&nbsp;&nbsp;&nbsp;
               <MDTypography variant="caption" fontWeight="medium">
                 {address}
               </MDTypography>
             </MDTypography>
-          </MDBox>
+          </MDBox> */}
           <MDBox mb={0} lineHeight={0} display="flex" flexDirection="row" alignItems="center">
             <MDTypography variant="caption" color="text">
               Image:&nbsp;&nbsp;&nbsp;
@@ -522,9 +593,9 @@ Bill.defaultProps = {
 // Typechecking props for the Bill
 Bill.propTypes = {
   name: PropTypes.string.isRequired,
-  currentPrice: PropTypes.string.isRequired,
+  price: PropTypes.string.isRequired,
   category: PropTypes.string.isRequired,
-  address: PropTypes.string.isRequired,
+  // address: PropTypes.string.isRequired,
   dataId: PropTypes.string.isRequired,
   noGutter: PropTypes.bool,
 };

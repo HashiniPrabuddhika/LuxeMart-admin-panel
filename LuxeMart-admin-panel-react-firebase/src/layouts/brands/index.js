@@ -77,9 +77,10 @@ function Brands() {
   const [categoriesDropdown, setCategoriesDropdown] = React.useState([])
   const [brandsData, setBrandsData] = React.useState({
     name: '',
-    contactNo: '',
-    website: '',
+    price: '',
+   // website: '',
     category: '',
+    priceUnit: 'unit',
   })
   const [file, setFile] = React.useState('')
 
@@ -139,8 +140,9 @@ function Brands() {
       setLoading(true)
       const docId = await addDoc(collection(db, "products"), {
         name: brandsData.name,
-        contactNo: brandsData.contactNo,
-        website: brandsData.website,
+        price: brandsData.price,
+        priceUnit: brandsData.priceUnit, 
+        // website: brandsData.website,
         category: brandsData.category,
         logo: brandsData.logo
       })
@@ -153,9 +155,10 @@ function Brands() {
       brandsNotificationOpen()
       setBrandsData({
         name: '',
-        contactNo: '',
-        website: '',
+        price: '',
+      //  website: '',
         category: '',
+        priceUnit: 'unit',
       })
       setImageProgress(0)
       setImageProgressValue(0)
@@ -217,18 +220,7 @@ function Brands() {
                 name: e.target.value
               })}
             />
-            <TextField
-              label="Unit Price"
-              type="number"
-              rows={1}
-              color="secondary"
-              required
-              value={brandsData.contactNo}
-              onChange={(e) => setBrandsData({
-                ...brandsData,
-                contactNo: e.target.value
-              })}
-            />
+           
 
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth >
@@ -251,6 +243,7 @@ function Brands() {
                   })}
                 </Select>
               </FormControl>
+
               <FormControl fullWidth sx={{ mt: 2 }} >
                 <InputLabel htmlFor="outlined-adornment-amount" >Product Logo</InputLabel>
                 <OutlinedInput
@@ -288,7 +281,41 @@ function Brands() {
                 />
 
               </FormControl>
+
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="priceUnit-select-label">Unit</InputLabel>
+                <Select
+                sx={{ height: "2.8rem" }}
+                  labelId="priceUnit-select-label"
+                  id="priceUnit-select"
+                  value={brandsData.priceUnit}
+                  label="Unit"
+                  onChange={(e) => setBrandsData({
+                    ...brandsData,
+                    priceUnit: e.target.value
+                  })}
+                >
+                  
+                  <MenuItem value="priceUnit">Unit</MenuItem>
+                  <MenuItem value="KG">KG</MenuItem>
+                </Select>
+              </FormControl>
+              
+            
             </Box>
+
+            <TextField
+              label="Price"
+              type="number"
+              rows={1}
+              color="secondary"
+              required
+              value={brandsData.price}
+              onChange={(e) => setBrandsData({
+                ...brandsData,
+                price: e.target.value
+              })}
+            />
             {error === '' ? null :
               <MDBox mb={2} p={1}>
                 <TextField

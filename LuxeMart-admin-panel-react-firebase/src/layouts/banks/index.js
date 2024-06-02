@@ -79,7 +79,7 @@ function Banks() {
   const [bankFile, setBankFile] = React.useState('');
   const [banksData, setBanksData] = React.useState({
     name: '',
-    currentPrice: '',
+    price: '',
     address: '',
     category: '',
     startDate: '',
@@ -87,6 +87,7 @@ function Banks() {
   });
 
   const [categoriesDropdown, setCategoriesDropdown] = React.useState([]);
+  const [productsDropdown, setProductsDropdown] = React.useState([]);
 
   // Fetch all categories from Firestore
   const fetchAllCategories = async () => {
@@ -99,8 +100,19 @@ function Banks() {
     }
   };
 
+  const fetchAllProducts = async () => {
+    try {
+      const getAllDocs = await getDocs(collection(db, "products"));
+      const dbData = getAllDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setProductsDropdown(dbData);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
   React.useEffect(() => {
     fetchAllCategories();
+    fetchAllProducts();
   }, []);
 
   // BankFile upload
@@ -138,7 +150,7 @@ function Banks() {
       setLoading(true);
       const docId = await addDoc(collection(db, "discountproducts"), {
         name: banksData.name.toLowerCase().replace(/\s+/g, '').trim(),
-        currentPrice: banksData.currentPrice,
+        price: banksData.price,
         address: banksData.address,
         image: banksData.image,
         startDate: banksData.startDate,
@@ -154,7 +166,7 @@ function Banks() {
       bankNotificationOpen();
       setBanksData({
         name: '',
-        currentPrice: '',
+        price: '',
         address: '',
         category: '',
         startDate: '',
@@ -206,32 +218,40 @@ function Banks() {
             noValidate
             autoComplete="off"
           >
-            <TextField
-              label="Product Name"
-              type="text"
-              rows={1}
-              color="secondary"
-              required
-              value={banksData.name}
-              onChange={(e) => setBanksData({
-                ...banksData,
-                name: e.target.value
-              })}
-            />
+             <Box sx={{ maxWidth: "100%", m: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel id="product-select-label" sx={{ height: "2.8rem" }} required>Select Product</InputLabel>
+                <Select
+                  sx={{ height: "2.8rem" }}
+                  labelId="product-select-label"
+                  id="product-select"
+                  label="Select Product"
+                  value={banksData.name}
+                  onChange={(e) => setBanksData({
+                    ...banksData,
+                    name: e.target.value
+                  })}
+                >
+                  {productsDropdown.map((item) => (
+                    <MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
               label="Current Price Rs."
               type="number"
               rows={1}
               color="secondary"
               required
-              value={banksData.currentPrice}
+              value={banksData.price}
               onChange={(e) => setBanksData({
                 ...banksData,
-                currentPrice: e.target.value
+                price: e.target.value
               })}
             />
-            <TextField
-              label="Website URL"
+            {/* <TextField
+             // label="Website URL"
               type="url"
               rows={1}
               color="secondary"
@@ -241,7 +261,7 @@ function Banks() {
                 ...banksData,
                 address: e.target.value
               })}
-            />
+            /> */}
             <Box sx={{ maxWidth: "100%", m: 2 }}>
               <FormControl fullWidth>
                 <InputLabel id="category-select-label" sx={{ height: "2.8rem" }} required>Select Category</InputLabel>

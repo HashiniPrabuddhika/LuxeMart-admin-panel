@@ -52,11 +52,13 @@ function Detail() {
                     <MDBox component="ul" display="flex" flexDirection="column" p={0} m={0}>
                      {data && <Bill
                         name={data.name}
-                        contactNo={data.contactNo}
-                        website={data.website}
+                        price={data.price}
+                     //   website={data.website}
                         category={data.category}
                         logo={data.logo}
                         dataId={id}
+                        priceUnit={data.priceUnit || "unit"}
+                        
                       />}
                     </MDBox>
                   </MDBox>
