@@ -74,7 +74,7 @@ const style = {
   boxShadow: 24,
 };
 
-function Bill({ name, price, address, category,image, noGutter, dataId }) {
+function Bill({ name, price,discount, address, category,image, noGutter, dataId }) {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [deleteAlert, setDeleteAlert] = React.useState(false);
@@ -204,6 +204,7 @@ function Bill({ name, price, address, category,image, noGutter, dataId }) {
     const updateData = {
       name: dbBanksData.name,
       price: dbBanksData.price,
+      discount:dbBanksData.discount,
       category: dbBanksData.category,
       address: dbBanksData.address,
       image: dbBanksData.image,
@@ -390,6 +391,17 @@ function Bill({ name, price, address, category,image, noGutter, dataId }) {
                 price: e.target.value
               })}
             />
+              <TextField
+              label="Discount Percentage %"
+              type="number"
+              color="secondary"
+              required
+              value={dbBanksData.discount}
+              onChange={(e) => setDbBanksData({
+                ...dbBanksData,
+                discount: e.target.value
+              })}
+            />
             {/* <TextField
               label="Website URL"
               type="url"
@@ -549,6 +561,14 @@ function Bill({ name, price, address, category,image, noGutter, dataId }) {
             </MDTypography>
           </MDBox>
           <MDBox mb={1} lineHeight={0}>
+            <MDTypography variant="caption" color="text">
+            Discount Percentage:&nbsp;&nbsp;&nbsp;
+              <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
+                {discount}
+              </MDTypography>
+            </MDTypography>
+          </MDBox>
+          <MDBox mb={1} lineHeight={0}>
   <MDTypography variant="caption" color="text">
     Start Date:&nbsp;&nbsp;&nbsp;
     <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
@@ -594,6 +614,7 @@ Bill.defaultProps = {
 Bill.propTypes = {
   name: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
+  discount:PropTypes.string.isRequired,
   category: PropTypes.string.isRequired,
   // address: PropTypes.string.isRequired,
   dataId: PropTypes.string.isRequired,

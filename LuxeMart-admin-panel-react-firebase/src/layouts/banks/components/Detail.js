@@ -386,6 +386,7 @@ function Detail() {
                       {data && <Bill
                         name={data.name}
                         price={data.price}
+                        discount={data.discount}
                         address={data.address}
                         image={data.image}
                         dataId={id}

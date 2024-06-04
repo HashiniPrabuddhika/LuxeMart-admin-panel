@@ -27,7 +27,7 @@ import banksNameTable from "layouts/banks/data/banksNameTable";
 
 // Firestore 
 import { db, storage } from "../../firebase";
-import { collection, addDoc, getDocs, doc, setDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, setDoc,getDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 // Modal Styles
@@ -84,6 +84,7 @@ function Banks() {
     category: '',
     startDate: '',
     endDate: '',
+    discount:'',
   });
 
   const [categoriesDropdown, setCategoriesDropdown] = React.useState([]);
@@ -151,6 +152,7 @@ function Banks() {
       const docId = await addDoc(collection(db, "discountproducts"), {
         name: banksData.name.toLowerCase().replace(/\s+/g, '').trim(),
         price: banksData.price,
+        discount:banksData.discount,
         address: banksData.address,
         image: banksData.image,
         startDate: banksData.startDate,
@@ -167,6 +169,7 @@ function Banks() {
       setBanksData({
         name: '',
         price: '',
+        discount:'',
         address: '',
         category: '',
         startDate: '',
@@ -179,6 +182,35 @@ function Banks() {
       setLoading(false);
     }
   };
+
+  const fetchProductDetails = async (productName) => {
+    try {
+      const productDoc = await getDoc(doc(db, "products", productName));
+      if (productDoc.exists()) {
+        const productData = productDoc.data();
+        setBanksData((prev) => ({
+          ...prev,
+          category: productData.category,
+         
+        }));
+      } else {
+        console.log("No such product!");
+      }
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+    }
+  };
+  
+  const handleProductChange = (e) => {
+    const productName = e.target.value;
+    setBanksData((prev) => ({
+      ...prev,
+      name: productName,
+    }));
+    fetchProductDetails(productName);
+  };
+  
+  
 
   const bankModalOpen = () => setBankModal(true);
   const bankModalClose = () => {
@@ -227,10 +259,7 @@ function Banks() {
                   id="product-select"
                   label="Select Product"
                   value={banksData.name}
-                  onChange={(e) => setBanksData({
-                    ...banksData,
-                    name: e.target.value
-                  })}
+                  onChange={handleProductChange}
                 >
                   {productsDropdown.map((item) => (
                     <MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>
@@ -250,6 +279,18 @@ function Banks() {
                 price: e.target.value
               })}
             />
+             <TextField
+              label="Discount Percentage %"
+              type="number"
+              rows={1}
+              color="secondary"
+              required
+              value={banksData.discount}
+              onChange={(e) => setBanksData({
+                ...banksData,
+                discount: e.target.value
+              })}
+            />
             {/* <TextField
              // label="Website URL"
               type="url"
@@ -263,24 +304,25 @@ function Banks() {
               })}
             /> */}
             <Box sx={{ maxWidth: "100%", m: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel id="category-select-label" sx={{ height: "2.8rem" }} required>Select Category</InputLabel>
-                <Select
-                  sx={{ height: "2.8rem" }}
-                  labelId="category-select-label"
-                  id="category-select"
-                  label="Select Category"
-                  value={banksData.category}
-                  onChange={(e) => setBanksData({
-                    ...banksData,
-                    category: e.target.value
-                  })}
-                >
-                  {categoriesDropdown.map((item) => (
-                    <MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            <FormControl fullWidth>
+  <InputLabel id="category-select-label" sx={{ height: "2.8rem" }} required>Select Category</InputLabel>
+  <Select
+    sx={{ height: "2.8rem" }}
+    labelId="category-select-label"
+    id="category-select"
+    label="Select Category"
+    value={banksData.category}
+    onChange={(e) => setBanksData({
+      ...banksData,
+      category: e.target.value
+    })}
+  >
+    {categoriesDropdown.map((item) => (
+      <MenuItem key={item.id} value={item.name}>{item.name}</MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
               <FormControl fullWidth sx={{ mt: 2 }}>
                 <InputLabel htmlFor="outlined-adornment-amount">Product Image</InputLabel>
                 <OutlinedInput

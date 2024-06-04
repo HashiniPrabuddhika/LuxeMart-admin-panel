@@ -82,6 +82,8 @@ function Brands() {
     category: '',
     priceUnit: 'unit',
   })
+
+  
   const [file, setFile] = React.useState('')
 
   //file upload
