@@ -17,7 +17,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useMaterialUIController } from "context";
 
 //firestore
-import { db, storage } from "../.../../../../firebase"
+import { db, storage } from "../../../firebase"
 import { onSnapshot, doc, deleteDoc, arrayUnion, arrayRemove, collection, setDoc, query, where, getDocs } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 

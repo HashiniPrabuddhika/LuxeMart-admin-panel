@@ -2,7 +2,7 @@
 import Dashboard from "layouts/dashboard";
 import Brands from "layouts/brands";
 import AddSale from "layouts/addSale";
-import Banks from "layouts/banks";
+import Banks from "layouts/discountProducts";
 import Categories from "layouts/categories";
 import Carousels from "layouts/carousels";
 import Discounts from "layouts/discounts";
@@ -12,7 +12,7 @@ import Signup from "layouts/authentication/users/Signup"
 
 //auth routes
 import BrandsDetail from "layouts/brands/components/Detail"
-import BanksDetail from "layouts/banks/components/Detail"
+import BanksDetail from "layouts/discountProducts/components/Detail"
 import SalesDetail from "layouts/addSale/components/Detail"
 import CarouselsDetail from "layouts/carousels/components/Detail"
 import DiscountsDetail from "layouts/discounts/components/Detail"

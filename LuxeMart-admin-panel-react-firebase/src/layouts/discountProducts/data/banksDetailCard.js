@@ -22,7 +22,7 @@ import MDAvatar from "components/MDAvatar";
 import { useMaterialUIController } from "context";
 
 //firestore
-import { db, storage } from "../.../../../../firebase"
+import { db, storage } from "../../../firebase"
 import { doc, deleteDoc, getDoc, collection, query, where, getDocs, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 

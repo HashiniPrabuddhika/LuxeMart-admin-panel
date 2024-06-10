@@ -5,7 +5,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
-import { db } from "../.../../../../firebase";
+import { db } from "../../../firebase";
 
 function Data() {
   const [data, setData] = React.useState([]);

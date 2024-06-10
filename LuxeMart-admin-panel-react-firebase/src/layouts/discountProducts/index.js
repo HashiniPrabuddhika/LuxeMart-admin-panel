@@ -23,7 +23,7 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 // Data
-import banksNameTable from "layouts/banks/data/banksNameTable";
+import banksNameTable from "layouts/discountProducts/data/banksNameTable";
 
 // Firestore 
 import { db, storage } from "../../firebase";

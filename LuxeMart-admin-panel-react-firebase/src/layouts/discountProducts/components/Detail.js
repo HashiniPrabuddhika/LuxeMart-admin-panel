@@ -21,15 +21,15 @@ import * as React from 'react';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import Bill from "layouts/banks/data/banksDetailCard";
+import Bill from "layouts/discountProducts/data/banksDetailCard";
 import DataTable from "examples/Tables/DataTable";
 import { useParams } from "react-router-dom"
 
 // Data
-import cardsNameTable from "layouts/banks/data/cardsNameTable"
+import cardsNameTable from "layouts/discountProducts/data/cardsNameTable"
 
 //firestore
-import { db, storage } from "../.../../../../firebase"
+import { db, storage } from "../../../firebase"
 import { doc, query, where, collection, getDocs, arrayUnion, onSnapshot, getDoc, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
