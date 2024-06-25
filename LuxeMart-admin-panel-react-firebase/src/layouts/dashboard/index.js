@@ -143,9 +143,9 @@ function Dashboard() {
             <MDBox mb={3}>
               <ReportsBarChart
                 color="info"
-                title="website views"
-                description="Last Campaign Performance"
-                date="campaign sent 2 days ago"
+                title="Graph views"
+                description="Last discount Products Performance"
+                date="discount Products sent 1 days ago"
                 chart={exportedObject }
               />
             </MDBox>
@@ -169,8 +169,8 @@ function Dashboard() {
             <MDBox mb={3}>
               <ReportsLineChart
                 color="dark"
-                title="completed tasks"
-                description="Last Campaign Performance"
+                title="completed discounts goods"
+                description="Last discount Products Performance"
                 date="just updated"
                 chart={tasks}
               />

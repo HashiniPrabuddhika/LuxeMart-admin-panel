@@ -7,8 +7,6 @@ import Grid from "@mui/material/Grid";
 // Amdin panel React components
 import MDBox from "components/MDBox";
 
-// // Amdin panel React example components
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 
 // // Authentication pages components
@@ -17,7 +15,7 @@ import PageLayout from "examples/LayoutContainers/PageLayout";
 function BasicLayout({ image, children }) {
   return (
     <PageLayout>
-      <DefaultNavbar />
+      
       <MDBox
         position="absolute"
         width="100%"
